@@ -1,0 +1,27 @@
+k apply -f db-configmap.yaml 
+
+k apply -f db-persistent-volume.yaml
+
+k apply -f db-volume-claim.yaml
+
+k apply -f dbfs-persistent-volume.yaml
+
+k apply -f dbfs-volume-claim.yaml
+
+k apply -f db-deployment.yaml
+
+k apply -f db-service.yaml
+
+k create namespace engage-rocket-postgres
+
+k delete namespace engage-rocket-postgres
+
+k exec -it postgres-67b6b58778-64kvj -- psql -h localhost -U postgresadmin --password -p 5432 postgresdb
+
+k exec -it postgres-67b6b58778-64kvj bash
+
+k cp ./devdump.sql postgres-67b6b58778-64kvj:/fs/
+
+psql -U postgresadmin  -d engage_rocket_development < devdump.sql
+
+k port-forward postgres-67b6b58778-64kvj 5432:5432
