@@ -1,21 +1,29 @@
-from datetime import datetime
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.python_operator import PythonOperator
-from airflow.operators import MultiplyBy5Operator
+from airflow.utils.dates import days_ago
 
-def print_hello():
- return 'Hello Wolrd'
+default_args = {
+    'owner': 'airflow',
+    'start_date': days_ago(2),
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
 
-dag = DAG('hello_world', description='Hello world example', schedule_interval='0 12 * * *', start_date=datetime(2017, 3, 20), catchup=False)
+with DAG(
+    'my_first_dag',
+    default_args=default_args,
+    description='A simple DAG',
+    schedule_interval=timedelta(days=1),
+    catchup=False,
+) as dag:
 
-dummy_operator = DummyOperator(task_id='dummy_task', retries = 3, dag=dag)
+    t1 = DummyOperator(
+        task_id='task_1',
+    )
 
-hello_operator = PythonOperator(task_id='hello_task', python_callable=print_hello, dag=dag)
+    t2 = DummyOperator(
+        task_id='task_2',
+    )
 
-multiplyby5_operator = MultiplyBy5Operator(my_operator_param='my_operator_param',
-                                task_id='multiplyby5_task', dag=dag)
-
-dummy_operator >> hello_operator
-
-dummy_operator >> multiplyby5_operator
+    t1 >> t2
