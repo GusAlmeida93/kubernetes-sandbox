@@ -24,7 +24,7 @@ SPARK_STEPS = [
             'Args': [
                 "spark-submit",
                 "--deploy-mode",
-                "cluster"
+                "cluster",
                 "--conf",
                 f"spark.executorEnv.host={host}",
                 "--conf",
