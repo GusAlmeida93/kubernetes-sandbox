@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-spark
+spec:
+  selector:
+    matchLabels:
+      app: jupyter-spark
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jupyter-spark
+    spec:
+      containers:
+        - name: jupyter-spark
+          image: jupyter/pyspark-notebook
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "12Gi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 8888
+          volumeMounts:
+            - mountPath: /home/jovyan/work
+              name: jupyter-spark-volume
+          env:
+            - name: GRANT_SUDO
+              value: "yes"
+      volumes:
+        - name: jupyter-spark-volume
+          persistentVolumeClaim:
+            claimName: jupyter-spark-pvc

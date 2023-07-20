@@ -1,3 +1,7 @@
+k delete namespace engage-rocket-postgres
+
+k create namespace engage-rocket-postgres
+
 k apply -f db-configmap.yaml 
 
 k apply -f db-persistent-volume.yaml
@@ -12,16 +16,19 @@ k apply -f db-deployment.yaml
 
 k apply -f db-service.yaml
 
-k create namespace engage-rocket-postgres
+k exec -it postgres-66bc775975-vhtjm -- psql -h localhost -U postgresadmin --password -p 5432 engage_rocket_development
 
-k delete namespace engage-rocket-postgres
+k exec -it postgres-66bc775975-vhtjm bash
 
-k exec -it postgres-67b6b58778-64kvj -- psql -h localhost -U postgresadmin --password -p 5432 postgresdb
-
-k exec -it postgres-67b6b58778-64kvj bash
-
-k cp ./devdump.sql postgres-67b6b58778-64kvj:/fs/
+k cp ./devdump.sql postgres-66bc775975-vhtjm:/fs/
 
 psql -U postgresadmin  -d engage_rocket_development < devdump.sql
 
-k port-forward postgres-67b6b58778-64kvj 5432:5432
+k port-forward svc/postgres 5432:5432
+
+docker run -it --rm -p 8888:8888 -v /home/gustavoalmeida/code/engagerocket/airflow-dags:/home/jovyan/work jupyter/pyspark-notebook
+
+
+k port-forward svc/jupyter-spark 8888:8888
+
+k cp ./postgresql-42.6.0.jar jupyter-spark-5968dc7997-dp8kq:/tmp/

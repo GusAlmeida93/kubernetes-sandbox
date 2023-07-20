@@ -16,6 +16,13 @@ spec:
         - name: postgres
           image: postgres:11-alpine
           imagePullPolicy: "IfNotPresent"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "8Gi"
+              cpu: "2000m"
           ports:
             - containerPort: 5432
           envFrom:
